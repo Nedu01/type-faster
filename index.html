@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Type Faster</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="toast-container" class="toast-container"></div>
+
+<!-- MENU -->
+<section id="screen-menu" class="screen active">
+  <div class="menu-card">
+    <h1 class="logo">⌨️ Type Faster</h1>
+    <p class="tagline">Train your typing speed. Level up. Beat your best.</p>
+
+    <div class="mode-select">
+      <button class="mode-btn" id="btn-mode-falling">
+        <span class="mode-icon">🎯</span>
+        <span class="mode-title">Falling Words</span>
+        <span class="mode-desc">Arcade mode — type words before they hit the ground</span>
+      </button>
+      <button class="mode-btn" id="btn-mode-sentences">
+        <span class="mode-icon">📝</span>
+        <span class="mode-title">Sentence Practice</span>
+        <span class="mode-desc">Type full sentences for real WPM training</span>
+      </button>
+    </div>
+
+    <div id="sentence-difficulty" class="difficulty-select hidden">
+      <span class="difficulty-label">Difficulty:</span>
+      <button class="chip" data-diff="easy">Easy</button>
+      <button class="chip" data-diff="medium">Medium</button>
+      <button class="chip" data-diff="hard">Hard</button>
+    </div>
+
+    <div class="panels">
+      <div class="panel" id="panel-scores">
+        <h2>🏆 High Scores</h2>
+        <div class="score-tabs">
+          <button class="tab active" data-tab="falling">Falling Words</button>
+          <button class="tab" data-tab="sentences">Sentences</button>
+        </div>
+        <ol id="score-list-falling" class="score-list"></ol>
+        <ol id="score-list-sentences" class="score-list hidden"></ol>
+      </div>
+
+      <div class="panel" id="panel-achievements">
+        <h2>🎖️ Achievements <span id="achievement-count"></span></h2>
+        <div id="achievement-grid" class="achievement-grid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FALLING WORDS GAME -->
+<section id="screen-falling" class="screen">
+  <div class="hud">
+    <div class="hud-item"><span class="hud-label">Score</span><span id="falling-score" class="hud-value">0</span></div>
+    <div class="hud-item"><span class="hud-label">Combo</span><span id="falling-combo" class="hud-value combo">x1</span></div>
+    <div class="hud-item"><span class="hud-label">Level</span><span id="falling-level" class="hud-value">1</span></div>
+    <div class="hud-item"><span class="hud-label">Lives</span><span id="falling-lives" class="hud-value">❤️❤️❤️</span></div>
+    <button id="btn-falling-quit" class="btn-quit">✕ Quit</button>
+  </div>
+  <div id="falling-playarea" class="playarea">
+    <div id="falling-focus-hint" class="focus-hint hidden">⌨️ Click to focus &amp; keep typing</div>
+  </div>
+  <input id="falling-input" class="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+</section>
+
+<!-- SENTENCE TYPING GAME -->
+<section id="screen-sentences" class="screen">
+  <div class="hud">
+    <div class="hud-item"><span class="hud-label">WPM</span><span id="sentences-wpm" class="hud-value">0</span></div>
+    <div class="hud-item"><span class="hud-label">Accuracy</span><span id="sentences-accuracy" class="hud-value">100%</span></div>
+    <div class="hud-item"><span class="hud-label">Combo</span><span id="sentences-combo" class="hud-value combo">x1</span></div>
+    <div class="hud-item"><span class="hud-label">Completed</span><span id="sentences-completed" class="hud-value">0</span></div>
+    <button id="btn-sentences-quit" class="btn-quit">✕ Quit</button>
+  </div>
+  <div class="sentence-wrap">
+    <div id="sentence-display" class="sentence-display"></div>
+    <input id="sentences-input" class="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p class="hint">Just start typing — the sentence advances automatically.</p>
+    <div id="sentences-focus-hint" class="focus-hint hidden">⌨️ Click here to focus &amp; keep typing</div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="screen-results" class="screen">
+  <div class="results-card">
+    <h1 id="results-title">Run Complete!</h1>
+    <div class="results-grid">
+      <div class="result-stat"><span class="stat-value" id="result-wpm">0</span><span class="stat-label">WPM</span></div>
+      <div class="result-stat"><span class="stat-value" id="result-accuracy">0%</span><span class="stat-label">Accuracy</span></div>
+      <div class="result-stat"><span class="stat-value" id="result-score">0</span><span class="stat-label">Score</span></div>
+      <div class="result-stat"><span class="stat-value" id="result-combo">0</span><span class="stat-label">Best Combo</span></div>
+    </div>
+    <div id="result-new-achievements" class="result-achievements"></div>
+    <div class="results-actions">
+      <button id="btn-play-again" class="btn-primary">Play Again</button>
+      <button id="btn-back-menu" class="btn-secondary">Back to Menu</button>
+    </div>
+  </div>
+</section>
+
+<script src="words.js"></script>
+<script src="storage.js"></script>
+<script src="achievements.js"></script>
+<script src="game-common.js"></script>
+<script src="game-falling.js"></script>
+<script src="game-sentences.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
