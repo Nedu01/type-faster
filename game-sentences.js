@@ -68,8 +68,7 @@ const SentenceGame = (() => {
       } else if (i === typed.length) {
         cls += " current";
       }
-      const safeCh = ch === " " ? "&nbsp;" : escapeHtml(ch);
-      html += `<span class="${cls}">${safeCh}</span>`;
+      html += `<span class="${cls}">${escapeHtml(ch)}</span>`;
     }
     display.innerHTML = html;
   }

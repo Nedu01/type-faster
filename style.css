@@ -23,6 +23,7 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
 .screen {
@@ -287,6 +288,8 @@ html, body {
   position: relative;
   width: 100%;
   max-width: 900px;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -294,18 +297,27 @@ html, body {
   box-shadow: var(--shadow);
   text-align: center;
   cursor: text;
+  box-sizing: border-box;
 }
 .sentence-display {
-  font-size: 1.6rem;
+  font-size: clamp(1.05rem, 1.1rem + 1vw, 1.6rem);
   line-height: 1.7;
   letter-spacing: .01em;
   font-family: "Consolas", "Courier New", monospace;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .sentence-display .char { color: var(--text-muted); transition: color .05s ease; }
 .sentence-display .char.correct { color: var(--good); }
 .sentence-display .char.incorrect { color: var(--bad); background: #fee2e2; border-radius: 3px; }
 .sentence-display .char.current { border-bottom: 3px solid var(--accent); }
 .hint { color: var(--text-muted); font-size: .85rem; margin-top: 18px; }
+
+@media (max-width: 640px) {
+  .sentence-wrap { padding: 24px 18px; }
+  .hud { flex-wrap: wrap; gap: 12px 20px; padding: 12px 16px; }
+}
 
 .hidden-input {
   position: absolute;
