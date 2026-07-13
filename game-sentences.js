@@ -7,6 +7,7 @@ const SentenceGame = (() => {
   let combo, correctChars, incorrectChars, sessionStart, sentenceStart;
   let completedCount, sessionScore, maxCombo;
   let running = false;
+  let lastTypedLength = 0;
   const SESSION_TARGET = 5; // sentences per session before results
 
   function init() {
@@ -54,6 +55,7 @@ const SentenceGame = (() => {
   function nextSentence() {
     current = getSentence(difficulty);
     sentenceStart = null;
+    lastTypedLength = 0;
     input.value = "";
     renderSentence("");
   }
@@ -78,6 +80,16 @@ const SentenceGame = (() => {
     if (sentenceStart === null) sentenceStart = performance.now();
     const typed = input.value;
     renderSentence(typed);
+
+    // Track only the newly-added character (ignores backspaces) so per-key
+    // stats reflect real keystroke cadence for the keyboard-mastery heatmap.
+    if (typed.length > lastTypedLength) {
+      const idx = typed.length - 1;
+      if (idx < current.length) {
+        trackKeystroke(current[idx], typed[idx] === current[idx]);
+      }
+    }
+    lastTypedLength = typed.length;
 
     if (typed.length >= current.length) {
       // score this sentence

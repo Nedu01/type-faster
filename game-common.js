@@ -26,6 +26,21 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+// Records per-key accuracy/speed stats (storage.js) for the keyboard-mastery
+// heatmap. Shared across all typing surfaces (falling words, sentences,
+// lessons) so stats accumulate everywhere the player types, not just in
+// lessons. `char` should be the single character actually expected at that
+// position (lowercased); timing is only kept for correct presses.
+let _lastKeystrokeTime = null;
+
+function trackKeystroke(char, isCorrect) {
+  if (!char) return;
+  const now = performance.now();
+  const msSinceLastKey = _lastKeystrokeTime === null ? null : now - _lastKeystrokeTime;
+  _lastKeystrokeTime = now;
+  recordKeyPress(char.toLowerCase(), isCorrect, msSinceLastKey);
+}
+
 class ComboTracker {
   constructor() {
     this.combo = 0;

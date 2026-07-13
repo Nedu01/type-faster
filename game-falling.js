@@ -8,6 +8,7 @@ const FallingGame = (() => {
   let rafId = null, lastFrameTime = 0;
   let running = false;
   let pointsToNextLevel = 0;
+  let lastTypedLength = 0;
 
   function init() {
     playarea = document.getElementById("falling-playarea");
@@ -40,6 +41,7 @@ const FallingGame = (() => {
     startTime = performance.now();
     running = true;
     input.value = "";
+    lastTypedLength = 0;
     updateHUD();
     input.focus();
 
@@ -110,13 +112,27 @@ const FallingGame = (() => {
     setTimeout(() => playarea.classList.remove("shake"), 300);
     incorrectChars += w.text.length;
     input.value = "";
+    lastTypedLength = 0;
     renderMatch("");
     updateHUD();
     if (lives <= 0) finish();
   }
 
   function onInput() {
-    const typed = input.value.trim();
+    const raw = input.value;
+
+    // Track only the newly-added character (ignores backspaces) for the
+    // keyboard-mastery heatmap: correct if it still extends a valid prefix
+    // of some falling word, incorrect otherwise.
+    if (raw.length > lastTypedLength) {
+      const idx = raw.length - 1;
+      const prefix = raw.slice(0, idx + 1);
+      const isCorrect = words.some((w) => w.text.startsWith(prefix));
+      trackKeystroke(raw[idx], isCorrect);
+    }
+    lastTypedLength = raw.length;
+
+    const typed = raw.trim();
     if (!typed) {
       words.forEach((w) => w.el.classList.remove("active"));
       renderMatch("");
@@ -128,6 +144,7 @@ const FallingGame = (() => {
     if (exact) {
       completeWord(exact);
       input.value = "";
+      lastTypedLength = 0;
       renderMatch("");
     }
   }

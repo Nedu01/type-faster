@@ -27,6 +27,17 @@
         <span class="mode-title">Sentence Practice</span>
         <span class="mode-desc">Type full sentences for real WPM training</span>
       </button>
+      <button class="mode-btn" id="btn-mode-lessons">
+        <span class="mode-icon">🎓</span>
+        <span class="mode-title">Keyboard Mastery</span>
+        <span class="mode-desc">Learn proper technique, one key at a time</span>
+      </button>
+    </div>
+
+    <div class="panel panel-full" id="panel-keyboard-stats-teaser">
+      <h2>⌨️ Your Weakest Keys</h2>
+      <div id="menu-weakest-keys" class="weakest-keys-line">Play a bit to see your weak spots here.</div>
+      <button id="btn-view-keyboard-stats" class="btn-secondary btn-small">View Keyboard Heatmap</button>
     </div>
 
     <div id="sentence-difficulty" class="difficulty-select hidden">
@@ -87,6 +98,55 @@
   </div>
 </section>
 
+<!-- LESSON LIST -->
+<section id="screen-lessons" class="screen">
+  <div class="menu-card">
+    <h1 class="logo">🎓 Keyboard Mastery</h1>
+    <p class="tagline">Master proper finger placement, one key at a time.</p>
+
+    <div id="lessons-weakest-keys" class="weakest-keys-line"></div>
+
+    <div id="lesson-list" class="lesson-list"></div>
+
+    <div class="results-actions">
+      <button id="btn-lessons-view-heatmap" class="btn-secondary">View Keyboard Heatmap</button>
+      <button id="btn-lessons-back-menu" class="btn-secondary">Back to Menu</button>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVE LESSON -->
+<section id="screen-lesson-active" class="screen">
+  <div class="hud">
+    <div class="hud-item"><span class="hud-label">Lesson</span><span id="lesson-title" class="hud-value">—</span></div>
+    <div class="hud-item"><span class="hud-label">WPM</span><span id="lesson-wpm" class="hud-value">0</span></div>
+    <div class="hud-item"><span class="hud-label">Accuracy</span><span id="lesson-accuracy" class="hud-value">100%</span></div>
+    <div class="hud-item"><span class="hud-label">Combo</span><span id="lesson-combo" class="hud-value combo">x1</span></div>
+    <div class="hud-item"><span class="hud-label">Progress</span><span id="lesson-progress" class="hud-value">0/8</span></div>
+    <button id="btn-lesson-quit" class="btn-quit">✕ Quit</button>
+  </div>
+  <div class="lesson-wrap">
+    <div id="lesson-display" class="sentence-display"></div>
+    <input id="lesson-input" class="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p class="hint">Type the drill above — watch the keyboard for the next key and finger.</p>
+    <div id="lesson-keyboard" class="lesson-keyboard-container"></div>
+    <div id="lesson-focus-hint" class="focus-hint hidden">⌨️ Click here to focus &amp; keep typing</div>
+  </div>
+</section>
+
+<!-- KEYBOARD HEATMAP -->
+<section id="screen-keyboard-stats" class="screen">
+  <div class="menu-card">
+    <h1 class="logo">⌨️ Keyboard Heatmap</h1>
+    <p class="tagline">Green = strong, red = needs practice.</p>
+    <div id="keyboard-stats-view" class="lesson-keyboard-container"></div>
+    <div id="keyboard-stats-weakest" class="weakest-keys-line"></div>
+    <div class="results-actions">
+      <button id="btn-keyboard-stats-back" class="btn-secondary">Back to Menu</button>
+    </div>
+  </div>
+</section>
+
 <!-- RESULTS -->
 <section id="screen-results" class="screen">
   <div class="results-card">
@@ -98,6 +158,7 @@
       <div class="result-stat"><span class="stat-value" id="result-combo">0</span><span class="stat-label">Best Combo</span></div>
     </div>
     <div id="result-new-achievements" class="result-achievements"></div>
+    <div id="result-weakest-keys" class="weakest-keys-line"></div>
     <div class="results-actions">
       <button id="btn-play-again" class="btn-primary">Play Again</button>
       <button id="btn-back-menu" class="btn-secondary">Back to Menu</button>
@@ -106,11 +167,14 @@
 </section>
 
 <script src="words.js"></script>
+<script src="lessons.js"></script>
 <script src="storage.js"></script>
 <script src="achievements.js"></script>
 <script src="game-common.js"></script>
+<script src="virtual-keyboard.js"></script>
 <script src="game-falling.js"></script>
 <script src="game-sentences.js"></script>
+<script src="lesson-mode.js"></script>
 <script src="main.js"></script>
 </body>
 </html>

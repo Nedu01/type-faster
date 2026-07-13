@@ -1,7 +1,8 @@
 // App entry: screen management, mode selection, menu wiring.
 
 const App = (() => {
-  let currentMode = null; // "falling" | "sentences"
+  let currentMode = null; // "falling" | "sentences" | "lesson"
+  let currentLessonId = null;
   let selectedDifficulty = "easy";
 
   function showScreen(id) {
@@ -42,6 +43,40 @@ const App = (() => {
       `(${unlocked.length}/${ACHIEVEMENTS.length})`;
   }
 
+  function renderWeakestKeys(containerId, emptyText) {
+    const el = document.getElementById(containerId);
+    const weakest = getWeakestKeys(3);
+    if (weakest.length === 0) {
+      el.textContent = emptyText;
+      return;
+    }
+    el.textContent = "Weakest keys: " + weakest.map((k) => `${k.key === " " ? "space" : k.key} (${k.accuracy}%)`).join(", ");
+  }
+
+  function renderLessonList() {
+    const container = document.getElementById("lesson-list");
+    const progress = getLessonProgress();
+    container.innerHTML = "";
+    LESSONS.forEach((lesson) => {
+      const p = progress[lesson.id];
+      const card = document.createElement("button");
+      card.className = "lesson-card" + (p && p.completed ? " lesson-passed" : "");
+      const status = p
+        ? (p.completed ? `✅ Passed · best ${p.bestAccuracy}% / ${p.bestWpm} WPM` : `Attempted · best ${p.bestAccuracy}%`)
+        : "Not started";
+      card.innerHTML = `<span class="lesson-card-title">${lesson.title}</span><span class="lesson-card-status">${status}</span>`;
+      card.addEventListener("click", () => startLesson(lesson.id));
+      container.appendChild(card);
+    });
+    renderWeakestKeys("lessons-weakest-keys", "Complete a few lessons to see your weak spots here.");
+  }
+
+  function renderKeyboardHeatmap() {
+    VirtualKeyboard.mount(document.getElementById("keyboard-stats-view"));
+    VirtualKeyboard.applyHeatmap();
+    renderWeakestKeys("keyboard-stats-weakest", "No typing data yet — play a mode or lesson first!");
+  }
+
   function showToast(text) {
     const container = document.getElementById("toast-container");
     const toast = document.createElement("div");
@@ -63,12 +98,15 @@ const App = (() => {
     });
     const newlyUnlocked = checkAchievements(result);
 
-    document.getElementById("results-title").textContent =
-      result.mode === "falling" ? "Run Complete!" : "Session Complete!";
+    let title = "Session Complete!";
+    if (result.mode === "falling") title = "Run Complete!";
+    else if (result.mode === "lesson") title = result.passed ? "Lesson Passed! 🎉" : "Lesson Complete — Keep Practicing";
+    document.getElementById("results-title").textContent = title;
     document.getElementById("result-wpm").textContent = result.wpm;
     document.getElementById("result-accuracy").textContent = result.accuracy + "%";
     document.getElementById("result-score").textContent = result.score;
     document.getElementById("result-combo").textContent = result.maxCombo;
+    renderWeakestKeys("result-weakest-keys", "");
 
     const achWrap = document.getElementById("result-new-achievements");
     achWrap.innerHTML = "";
@@ -95,6 +133,13 @@ const App = (() => {
     }
   }
 
+  function startLesson(lessonId) {
+    currentMode = "lesson";
+    currentLessonId = lessonId;
+    showScreen("screen-lesson-active");
+    LessonMode.start(lessonId);
+  }
+
   function quitToMenu() {
     // Record whatever progress was made instead of discarding it silently.
     // finishEarly() routes through onGameFinished -> results screen when
@@ -103,6 +148,8 @@ const App = (() => {
       if (FallingGame.finishEarly() === false) goToMenu();
     } else if (currentMode === "sentences") {
       if (SentenceGame.finishEarly() === false) goToMenu();
+    } else if (currentMode === "lesson") {
+      if (LessonMode.finishEarly() === false) goToMenu();
     } else {
       goToMenu();
     }
@@ -111,6 +158,7 @@ const App = (() => {
   function goToMenu() {
     renderHighScores();
     renderAchievements();
+    renderWeakestKeys("menu-weakest-keys", "Play a bit to see your weak spots here.");
     document.getElementById("sentence-difficulty").classList.add("hidden");
     showScreen("screen-menu");
   }
@@ -119,6 +167,10 @@ const App = (() => {
     document.getElementById("btn-mode-falling").addEventListener("click", () => startGame("falling"));
     document.getElementById("btn-mode-sentences").addEventListener("click", () => {
       document.getElementById("sentence-difficulty").classList.remove("hidden");
+    });
+    document.getElementById("btn-mode-lessons").addEventListener("click", () => {
+      renderLessonList();
+      showScreen("screen-lessons");
     });
 
     document.querySelectorAll("#sentence-difficulty .chip").forEach((chip) => {
@@ -141,13 +193,29 @@ const App = (() => {
 
     document.getElementById("btn-falling-quit").addEventListener("click", quitToMenu);
     document.getElementById("btn-sentences-quit").addEventListener("click", quitToMenu);
+    document.getElementById("btn-lesson-quit").addEventListener("click", quitToMenu);
     document.getElementById("btn-back-menu").addEventListener("click", goToMenu);
-    document.getElementById("btn-play-again").addEventListener("click", () => startGame(currentMode));
+    document.getElementById("btn-lessons-back-menu").addEventListener("click", goToMenu);
+    document.getElementById("btn-keyboard-stats-back").addEventListener("click", goToMenu);
+    document.getElementById("btn-play-again").addEventListener("click", () => {
+      if (currentMode === "lesson") startLesson(currentLessonId);
+      else startGame(currentMode);
+    });
+
+    document.getElementById("btn-view-keyboard-stats").addEventListener("click", () => {
+      renderKeyboardHeatmap();
+      showScreen("screen-keyboard-stats");
+    });
+    document.getElementById("btn-lessons-view-heatmap").addEventListener("click", () => {
+      renderKeyboardHeatmap();
+      showScreen("screen-keyboard-stats");
+    });
   }
 
   function init() {
     FallingGame.init();
     SentenceGame.init();
+    LessonMode.init();
     wireMenu();
     goToMenu();
   }
